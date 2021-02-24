@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 
-white = (225,225,225)
+white = (255,255,255)
 black = (0,0,0)
 green = (0,225,0)
 red = (225,0,0)
@@ -21,7 +21,7 @@ def f(x):
 	return 0.3*x
 
 class Perceptron:
-    def __init__(self, n, alpha=0.001):
+    def __init__(self, n, alpha=0.008):
         self.weights = []
         self.alpha = alpha
         for i in range(n):

@@ -2,7 +2,7 @@
 
 ## Implementing a Neural Network From Complete Scratch
 
-here i've implemented a neural network without using any ml-library (except numpy)
+here i've implemented a neural network without using any ml-library
 and just python Classes.
 
 ### Basics Overview of the Network.

@@ -12,9 +12,15 @@ and just python Classes.
 
 ____
 
-Here, the version1 program uses only one hidden layer, But in version2 i've improved the code so that you add **n** hidden layers to the network.
+Here, the version1 program uses only one hidden layer, But in version2 i've improved the code so that you can add **n hidden layers** to the network.
 
 ___
+
+### What you can do using the simple network?
+here are some projects i've implemented using this simple neural network
+
+* [Color Predictor](https://github.com/umairkarel/Machine-Learning/tree/master/Projects/Color_Predictor)
+* [Hand Written Digit Recognizer](https://github.com/umairkarel/Machine-Learning/tree/master/Projects/Hand-Written-Digit-Recognizer)
 
 ## Reference
 Book - [Make Your Own Neural Network](https://g.co/kgs/kcPZ2V) ~By Tariq Rashid

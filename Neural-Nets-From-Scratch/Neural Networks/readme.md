@@ -16,7 +16,7 @@ Here, the version1 program uses only one hidden layer, But in version2 i've impr
 
 ___
 
-### What you can do using the simple network?
+### What you can do using this simple neural network?
 here are some projects i've implemented using this simple neural network
 
 * [Color Predictor](https://github.com/umairkarel/Machine-Learning/tree/master/Projects/Color_Predictor)

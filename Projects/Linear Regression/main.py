@@ -22,7 +22,7 @@ def mousePress(event):
     point = canvas.create_oval(x, y, x+4, y+4, fill='blue')
 
     if len(data)>1:
-    	m,b = linearRegression_OLS(data, m, b)
+    	m,b = linearRegression_GD(data, m, b)
     	draw_line()
 
 def draw_line():

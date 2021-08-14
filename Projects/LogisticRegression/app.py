@@ -1,115 +1,118 @@
 import tkinter as ttk
 from tkinter import *
-import time
-import numpy as np
 import matplotlib.pyplot as plt
-
-# Optimal Branch
+from logic import *
 
 root = Tk()
-
-data = np.array([[0,0]])
-target = np.array([[-1]])
-line = None
 Height = 400
 Width = 500
-point = None
-color = 'Red'
+
+# Global Variables
+data = np.array([[0,0]])
+target = np.array([[-1]])
 theta = np.zeros((3,1))
+line = None
+point = None
 predicting = False
+trained = False
+currColor = 'Red'
 
 def mousePress(event):
     global data
     global target
-    global color
+    global currColor
 
     x = event.x
     y = event.y
 
     if predicting:
-        color = Predict(x/Width,y/Height)
+        currColor = Predict(x/Width,y/Height)
     else:
-        val = color=='Red'
+        val = currColor=='Red'
         data = np.concatenate((data,np.array([[x/Width, y/Height]])), axis=0)
         target = np.concatenate((target,np.array([[val]])), axis=0)
 
-    point = canvas.create_oval(x, y, x+4, y+4, fill=color)
+    point = canvas.create_oval(x, y, x+4, y+4, fill=currColor)
 
 def drawLine():
     global line
 
-    if line:
-        canvas.delete(line)
-        
-    m = -theta[1][0]/theta[2][0]
-    b = -theta[0][0]/theta[2][0]
-
-    x1 = 0
-    y1 = (m*x1 + b)
-    x2 = 1
-    y2 = (m*x2 + b)
-
-    x1 = Width*x1+2
-    x2 = Width*x2+2
-    y1 = y1*Height+2
-    y2 = y2*Height+2
-    line = canvas.create_line(x1, y1, x2, y2,fill='red')
-
-def changeColor(clr):
-    global color
-    global predicting
-    global theta
-
-    if not clr:
-        predicting = True
-        theta = fit(data[1:, :], target[1:, :], theta, 10000)
+    if not trained:
+        displayMsg("Please Train the Model First")
     else:
-        color = clr
-        predicting = False
+        # Deleting Previous Line
+        if line:
+            canvas.delete(line)
+            
+        m = -theta[1][0]/theta[2][0]
+        b = -theta[0][0]/theta[2][0]
 
-    if predicting == True:
+        x1 = 0
+        y1 = (m*x1 + b)
+        x2 = 1
+        y2 = (m*x2 + b)
+
+        x1 = Width*x1+2
+        x2 = Width*x2+2
+        y1 = y1*Height+2
+        y2 = y2*Height+2
+        line = canvas.create_line(x1, y1, x2, y2,fill='red')
+
+def displayMsg(msg):
+    warn_display = Label(root, text=msg, font=("arial", "16"))
+    warn_display.place(relx=0.3, rely=0.78)
+    root.after(2000, warn_display.destroy)
+
+def changeState(clr):
+    global currColor
+    global predicting
+
+    currColor = clr
+
+    if currColor == 'Green':
+        predicting = True
         predict_button.config(fg='green')
         Rbutton.config(fg='black')
         Bbutton.config(fg='black')
-    elif color == 'Blue':
+    elif currColor == 'Blue':
+        predicting = False
         Bbutton.config(fg='Blue')
         Rbutton.config(fg='black')
         predict_button.config(fg='black')
     else:
+        predicting = False
         Rbutton.config(fg='Red')
         Bbutton.config(fg='black')
         predict_button.config(fg='black')
 
-def sigmoid(z):
-    return (1/(1+ np.exp(-z)))
+def train():
+    global theta
+    global trained
 
-def cost(h, y):
-    m = len(y)
-    J = (-1/m) * (y.T @ np.log(h) + (1-y).T @ np.log(1-h))
-    return J[0][0]
+    if len(data) == 1:
+        displayMsg("Please Add Some Data Points")
+    else:
+        theta = fit(data[1:,:], target[1:,:], theta, 10000)
+        displayMsg("Your Model is Trained for 5000 iters!! Start Predicting")
+        trained = True
+        changeState('Green')
 
-def fit(X, y, theta, iters=1000):
-    X = np.concatenate((np.ones((X.shape[0], 1)), X), axis=1)
-    m = len(y)
-    alpha = 0.01
-    cost_hist = []
+def startPrediction():
+    global predicting
 
-    for i in range(iters):
-        h = sigmoid(X@theta)
-        grad = (1/m) * (X.T @ (h-y))
-        theta = theta - grad*alpha
-        cost_hist.append(cost(h,y))
-
-    # plt.plot([i for i in range(10000)], cost_hist)
-    # plt.show()
-    return theta
+    if not trained:
+        displayMsg("Please Train the Model First")
+    else:
+        predicting = True
+        changeState('Green')
 
 def Predict(x,y):
-    global data
-    global target
-    
-    drawLine()
-    prediction = sigmoid(theta[0] + theta[1]*x + theta[2]*y) > 0.5
+    if not trained:
+        warn_display = Label(root, text="Please Train the Model First", font=("arial", "16"))
+        warn_display.place(relx=0.2, rely=0.78)
+        root.after(2000, warn_display.destroy)
+    else:
+        prediction = sigmoid(theta[0] + theta[1]*x + theta[2]*y) > 0.5
 
     return 'Red' if prediction >= 0.5 else 'Blue'
 
@@ -117,13 +120,22 @@ canvas = Canvas(root, width=Width, height=Height, background='white')
 canvas.bind('<Button-1>', mousePress)
 canvas.pack()
 
-Rbutton = Button(root, text='Red', font=('Courier',20), fg='Red', command=lambda: changeColor('Red'))
+Data_Label = Label(root, text="Choose Data Point Color", font=("arial", "11"))
+Data_Label.place(x=0, rely=0.83)
+
+Rbutton = Button(root, text='Red', font=('Courier',20), fg='Red', command=lambda: changeState('Red'))
 Rbutton.pack(side=LEFT, expand=True)
 
-Bbutton = Button(root, text='Blue', font=('Courier',20), command=lambda: changeColor('Blue'))
+Bbutton = Button(root, text='Blue', font=('Courier',20), command=lambda: changeState('Blue'))
 Bbutton.pack(side=LEFT, expand=True)
 
-predict_button = Button(root, text='Predict', font=('Courier',20), command=lambda: changeColor(''))
+train_button = Button(root, text='Train Model', font=('Courier',20), command=lambda: train())
+train_button.pack(side=LEFT, expand=True)
+
+predict_button = Button(root, text='Predict', font=('Courier',20), command=startPrediction)
 predict_button.pack(side=LEFT, expand=True)
+
+boundary_button = Button(root, text='Decision Boundary', font=('Courier',20), command=lambda: drawLine())
+boundary_button.pack(side=LEFT, expand=True)
 
 root.mainloop()

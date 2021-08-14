@@ -1,6 +1,5 @@
 import tkinter as ttk
 from tkinter import *
-import matplotlib.pyplot as plt
 from logic import *
 
 root = Tk()
@@ -115,6 +114,7 @@ def Predict(x,y):
         prediction = sigmoid(theta[0] + theta[1]*x + theta[2]*y) > 0.5
 
     return 'Red' if prediction >= 0.5 else 'Blue'
+    
 
 canvas = Canvas(root, width=Width, height=Height, background='white')
 canvas.bind('<Button-1>', mousePress)
